@@ -1,4 +1,4 @@
-#Copyright Thomas VanCleave
+#Copyright TigerTom
 import socket
 class client():
     def connect(self, ip, port):
