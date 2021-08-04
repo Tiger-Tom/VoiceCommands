@@ -1,0 +1,6 @@
+1) Install Python (python.org)
+
+2) If on Windows:
+2a) Install the Visual Studio installer (visualstudio.microsoft.com)
+2b) In the VS installer, install the Windows SDK corresponding to your version
+2c) In the VS installer, install MSVC C++ build tools (version >= 14)
