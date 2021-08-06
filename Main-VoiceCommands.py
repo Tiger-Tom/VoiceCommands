@@ -14,6 +14,7 @@ import speech_recognition as sr
 import io
 import socketlib
 import time
+from Colors import bcolors
 
 # Recognizer
 spR = sr.Recognizer()
@@ -35,14 +36,14 @@ def recordStartF():
     try:
         data = recognizeAudio()
     except Exception as e:
-        print ('An error occured while reading audio ('+str(e)+')')
+        print (bcolors.FAIL+'An error occured while reading audio ('+str(e)+')'+bcolors.ENDC)
     if data:
         try:
             print (data+' >>> [server]')
             client.send(data, doRecv=False)
             command_list.append(data)
         except Exception as e:
-            print ('An error occured while sending data ('+str(e)+')')
+            print (bcolors.FAIL+'An error occured while sending data ('+str(e)+')'+bcolors.FAIL)
     while keyboard.is_pressed(recordStopKey): #Wait until the key is not being pressed
         pass
     setupHotkeys() #Re-enable hotkeys
@@ -50,17 +51,17 @@ def recordSendF():
     if len(command_list) > 0:
         keyboard.unhook_all_hotkeys() #Disable all hotkeys for safety
         keyboard.write(command_list[0], delay=0.005)
-        print ('Sent "'+command_list.pop(0)+'"')
-        client.send('⌘delete_first', doRecv=False)
+        print (bcolors.OKCYAN+'Sent "'+command_list.pop(0)+'"'+bcolors.ENDC)
         setupHotkeys() #Re-enable hotkeys
     else:
-        print ('Cannot send, as the command list is empty')
+        print (bcolors.WARNING+'Cannot send, as the command list is empty'+bcolors.ENDC)
+    client.send('⌘delete_first', doRecv=False)
 def recordDelF():
     if len(command_list) > 0:
-        print ('Deleted "'+command_list.pop()+'"')
-        client.send('⌘delete_last', doRecv=False)
+        print (bcolors.OKCYAN+'Deleted "'+command_list.pop()+'"'+bcolors.OKCYAN)
     else:
-        print ('Cannot delete, as the command list is empty')
+        print (bcolors.WARNING+'Cannot delete, as the command list is empty'+bcolors.ENDC)
+    client.send('⌘delete_last', doRecv=False)
 
 #   Hotkey setup
 def setupHotkeys():
@@ -83,7 +84,6 @@ def record(source, duration=None, offset=None): #Modified from an answer on http
     elapsed_time = 0
     offset_time = 0
     offset_reached = False
-    print ('Started recording')
     while True:  # loop for the total number of chunks needed
         if offset and not offset_reached:
             offset_time += seconds_per_buffer
@@ -103,14 +103,14 @@ def record(source, duration=None, offset=None): #Modified from an answer on http
 
     frame_data = frames.getvalue()
     frames.close()
-    print ('Finished recording')
     return sr.AudioData(frame_data, source.SAMPLE_RATE, source.SAMPLE_WIDTH)
 spR.record = record #Hijack the "record" function
 
 def getAudio():
     with sr.Microphone() as source:
-        print ('Getting input')
+        print (bcolors.OKGREEN+'Getting input'+bcolors.ENDC)
         audio = spR.record(source)
+        print (bcolors.OKBLUE+'Finished recording'+bcolors.ENDC)
     return audio
 def recognizeAudio():
     return spR.recognize_google(getAudio())
